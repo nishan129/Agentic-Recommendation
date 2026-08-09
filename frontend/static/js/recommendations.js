@@ -15,7 +15,6 @@
     return `
       <article class="recommendation-card" data-product-id="${escapeHtml(item.product_id)}" data-position="${position}" data-source="recommendation">
         <span class="score-chip">${Math.round(item.score * 100)}% match</span>
-        <span class="badge badge-category">${escapeHtml(item.reason ? '' : '')}</span>
         <h3 class="product-card-title">
           <a href="/products/${encodeURIComponent(item.product_id)}" data-track-click>${escapeHtml(item.title)}</a>
         </h3>
@@ -49,6 +48,7 @@
       }
 
       container.innerHTML = items.map((item, i) => recommendationCardHtml(item, i)).join('');
+      global.AppUI.revealGrid(container);
 
       // Track a view per surfaced recommendation, once, using an
       // IntersectionObserver so we only count cards that actually

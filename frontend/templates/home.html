@@ -1,17 +1,33 @@
 {% extends "base.html" %}
-{% block title %}SmartReco — Discover what fits you{% endblock %}
+{% block title %}SmartReco — AI picks that actually get you{% endblock %}
 {% block page_id %}home{% endblock %}
 
 {% block content %}
 <section class="hero">
+  <div class="hero-blob b1"></div>
+  <div class="hero-blob b2"></div>
   <div class="container">
     <div class="hero-inner">
-      <span class="eyebrow">Agentic recommendations</span>
-      <h1>Discover what fits you.</h1>
-      <p class="lede">Explore courses and products personalized around your interests — the more you browse, the sharper it gets.</p>
+      <span class="hero-badge"><span class="dot"></span> AI-powered recommendations, live</span>
+      <h1>Discover what<br><span class="gradient-text">actually</span> fits you.</h1>
+      <p class="lede">SmartReco learns from every click, search, and scroll — then serves up courses and products that feel personally picked. No noise, no filler.</p>
       <div class="hero-actions">
-        <a href="/products" class="btn btn-accent">Explore products</a>
-        <a href="/recommendations" class="btn btn-outline">View recommendations</a>
+        <a href="/products" class="btn btn-accent">Start exploring</a>
+        <a href="/recommendations" class="btn btn-outline">See my recommendations</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-num gradient-text">10K+</div>
+          <div class="stat-label">Products &amp; courses</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-num gradient-text">98%</div>
+          <div class="stat-label">Match satisfaction</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-num gradient-text">Real-time</div>
+          <div class="stat-label">Learning engine</div>
+        </div>
       </div>
     </div>
   </div>
@@ -19,10 +35,10 @@
 
 <section class="section-tight">
   <div class="container">
-    <span class="eyebrow">Browse by category</span>
+    <span class="eyebrow">Browse by vibe</span>
     <h2>Popular categories</h2>
     <div class="category-grid">
-      <a href="/products?category=programming" class="category-pill" data-track-click data-product-id="" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'programming'}})">
+      <a href="/products?category=programming" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'programming'}})">
         <span class="cat-icon">💻</span> Programming
       </a>
       <a href="/products?category=data-science" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'data-science'}})">
@@ -32,7 +48,7 @@
         <span class="cat-icon">🤖</span> AI &amp; ML
       </a>
       <a href="/products?category=web-development" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'web-development'}})">
-        <span class="cat-icon">🌐</span> Web Development
+        <span class="cat-icon">🌐</span> Web Dev
       </a>
       <a href="/products?category=cloud" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'cloud'}})">
         <span class="cat-icon">☁️</span> Cloud
@@ -51,9 +67,9 @@
   <div class="container">
     <div class="row between" style="margin-bottom: var(--space-5);">
       <div>
-        <span class="eyebrow">For you</span>
+        <span class="eyebrow">Made for you</span>
         <h2>Recommended for you</h2>
-        <p style="margin:0;">Based on your recent activity.</p>
+        <p style="margin:0;">Sharpened by your recent activity.</p>
       </div>
     </div>
     <div class="product-grid" data-recommendations-target data-recommendations-limit="4" aria-busy="true">
@@ -69,7 +85,7 @@
   <div class="container">
     <div class="row between" style="margin-bottom: var(--space-5);">
       <div>
-        <span class="eyebrow">Trending</span>
+        <span class="eyebrow">Trending now</span>
         <h2>Popular right now</h2>
       </div>
       <a href="/products" class="btn btn-outline btn-sm">View all</a>
@@ -94,6 +110,7 @@
       grid.innerHTML = items.length
         ? items.map((p, i) => AppUI.productCardHtml(p, { position: i, source: 'homepage' })).join('')
         : '<div class="empty-state"><div class="icon">✦</div><h3>No products yet</h3><p>Check back soon.</p></div>';
+      AppUI.revealGrid(grid);
     } catch (err) {
       grid.innerHTML = '<div class="empty-state"><div class="icon">⚠</div><h3>Products are temporarily unavailable</h3></div>';
     } finally {

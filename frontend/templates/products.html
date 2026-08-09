@@ -5,11 +5,52 @@
 {% block content %}
 <div class="container section-tight">
   <span class="eyebrow">Catalog</span>
-  <h1 style="font-size:2.2rem;"> Courses</h1>
+  <h1 style="font-size:2.4rem;">Products &amp; <span class="gradient-text">courses</span></h1>
 
   <div style="margin: var(--space-5) 0 var(--space-6);">
     {% include "components/search_bar.html" %}
   </div>
+
+  <div class="listing-layout">
+    <aside class="filters-panel">
+      <div class="row between">
+        <h3>Filters</h3>
+        <button class="btn btn-ghost btn-sm" id="clear-filters" type="button">Clear</button>
+      </div>
+
+      <div class="filter-group">
+        <h4>Category</h4>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="programming"> Programming</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="data-science"> Data Science</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="ai-ml"> AI &amp; ML</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="web-development"> Web Development</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="cloud"> Cloud</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="business"> Business</label>
+        <label class="filter-option"><input type="checkbox" name="category-filter" value="design"> Design</label>
+      </div>
+
+      <div class="filter-group">
+        <h4>Price range (₹)</h4>
+        <div class="price-range-inputs">
+          <input type="number" min="0" class="input" id="min-price" placeholder="Min">
+          <span>–</span>
+          <input type="number" min="0" class="input" id="max-price" placeholder="Max">
+        </div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="results-toolbar">
+        <span class="results-count" id="results-count">Loading…</span>
+        <select class="input" id="sort-select" style="width:auto;">
+          <option value="created_at:desc">Newest</option>
+          <option value="rating:desc">Top rated</option>
+          <option value="price:asc">Price: low to high</option>
+          <option value="price:desc">Price: high to low</option>
+          <option value="title:asc">Title: A–Z</option>
+        </select>
+      </div>
+
       <div class="product-grid" id="product-grid" aria-busy="true">
         <div class="skeleton skeleton-card"></div>
         <div class="skeleton skeleton-card"></div>

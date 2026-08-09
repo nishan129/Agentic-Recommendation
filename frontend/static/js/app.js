@@ -109,6 +109,45 @@
     });
   }
 
+  /** Gen-Z-friendly reveal-on-scroll: fade + slide up once, first time an
+   * element with [data-reveal] enters the viewport. Cheap (one shared
+   * IntersectionObserver, unobserves after firing) and respects reduced
+   * motion. Elements are marked up in templates; product/recommendation
+   * grids get this applied automatically after each render below. */
+  function bindScrollReveal(root = document) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const targets = root.querySelectorAll('[data-reveal]:not(.is-visible)');
+    if (targets.length === 0) return;
+
+    if (prefersReducedMotion || !('IntersectionObserver' in global)) {
+      targets.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    targets.forEach((el) => observer.observe(el));
+  }
+
+  /** Mark a freshly-rendered grid's children for reveal-on-scroll with a
+   * small stagger, then trigger the observer to pick them up. Call this
+   * right after setting innerHTML on any dynamically-loaded grid. */
+  function revealGrid(container) {
+    if (!container) return;
+    Array.from(container.children).forEach((child, i) => {
+      child.setAttribute('data-reveal', '');
+      child.style.transitionDelay = `${Math.min(i, 8) * 40}ms`;
+    });
+    bindScrollReveal(container);
+  }
+
   /**
    * Delegate clicks on any [data-track-click] product link to a
    * product_click event, tagged with position/source when the ancestor
@@ -134,8 +173,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     bindMobileNav();
     bindProductClickTracking();
+    bindScrollReveal();
   });
 
   global.Flash = Flash;
-  global.AppUI = { formatPrice, ratingStars, productCardHtml, skeletonCards, debounce, throttle, escapeHtml };
+  global.AppUI = { formatPrice, ratingStars, productCardHtml, skeletonCards, debounce, throttle, escapeHtml, revealGrid, bindScrollReveal };
 })(window);

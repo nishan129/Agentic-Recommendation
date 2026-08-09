@@ -21,9 +21,10 @@
       <span class="error-text"></span>
     </div>
     <div class="field" style="flex:1;">
-      <label for="pf-type">Course type</label>
+      <label for="pf-type">Product type</label>
       <select class="input" id="pf-type" name="product_type">
         <option value="course" {{ 'selected' if product.product_type == 'course' }}>Course</option>
+        <option value="product" {{ 'selected' if product.product_type == 'product' or not product }}>Product</option>
       </select>
     </div>
   </div>

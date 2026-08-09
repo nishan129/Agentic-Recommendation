@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Admin dashboard — Fernway{% endblock %}
+{% block title %}Admin dashboard — SmartReco{% endblock %}
 {% block page_id %}admin-dashboard{% endblock %}
 
 {% block content %}
@@ -10,17 +10,33 @@
 
     <div>
       <span class="eyebrow">Admin</span>
-      <h1 style="font-size:2rem;">Dashboard</h1>
+      <h1 style="font-size:2.1rem;">Dashboard</h1>
 
-      <div class="stat-grid" id="admin-dashboard-stats" style="margin: var(--space-6) 0;">
-        <div class="stat-card"><div class="stat-value" data-stat="total_users">–</div><div class="stat-label">Users</div></div>
-        <div class="stat-card"><div class="stat-value" data-stat="total_products">–</div><div class="stat-label">Products</div></div>
-        <div class="stat-card"><div class="stat-value" data-stat="total_events">–</div><div class="stat-label">Events</div></div>
-        <div class="stat-card"><div class="stat-value" data-stat="total_recommendations">–</div><div class="stat-label">Recommendations</div></div>
+      <div class="bento-grid" id="admin-dashboard-stats" style="margin: var(--space-6) 0;">
+        <div class="bento-card">
+          <div class="bento-icon">👥</div>
+          <div class="stat-value" data-stat="total_users">–</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <div class="bento-card cool">
+          <div class="bento-icon">📦</div>
+          <div class="stat-value" data-stat="total_products">–</div>
+          <div class="stat-label">Products</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon">⚡</div>
+          <div class="stat-value" data-stat="total_events">–</div>
+          <div class="stat-label">Events tracked</div>
+        </div>
+        <div class="bento-card cool">
+          <div class="bento-icon">✨</div>
+          <div class="stat-value" data-stat="total_recommendations">–</div>
+          <div class="stat-label">Recommendations</div>
+        </div>
       </div>
 
       <h3>Events by type</h3>
-      <ul id="admin-event-stats" style="background:var(--paper-raised); border:1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5);">
+      <ul id="admin-event-stats" style="background:var(--surface); border:1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); color: var(--text-soft);">
         <li>Loading…</li>
       </ul>
     </div>

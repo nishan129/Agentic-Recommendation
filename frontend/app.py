@@ -1,4 +1,13 @@
 """
+Frontend service — Jinja2 + FastAPI page routes for the Agentic
+Recommendation Platform.
+
+This app renders page *shells* only. All data (products, recommendations,
+auth, admin stats) is fetched client-side by static/js/*.js calling the
+backend API directly (see API_BASE_URL below / window.__API_BASE_URL__).
+This keeps the frontend a thin, fast, mostly-static server and lets the
+backend evolve independently.
+
 Run:
     uvicorn app:app --reload --port 3000
 """
@@ -9,10 +18,11 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-
+# The browser-side base URL for API calls. In local dev with docker-compose
+# this typically points at the backend's published port.
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
 
-app = FastAPI(title="Agentic Recommendation Platform — Frontend")
+app = FastAPI(title="SmartReco — Frontend")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -76,6 +86,12 @@ async def profile_page(request: Request):
 
 # ---------------------------------------------------------------------
 # Admin pages
+#
+# Note: these routes only render the page shell. Actual authorization is
+# enforced by the backend API on every request the page's JS makes — a
+# non-admin who navigates here directly will see empty/failed API calls,
+# never real admin data. Never trust the frontend as the authorization
+# boundary.
 # ---------------------------------------------------------------------
 
 @app.get("/admin")

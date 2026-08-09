@@ -6,6 +6,9 @@ from app.core.exceptions import NotFoundError
 from app.models.product import Product
 from app.repositories.product_repository import ProductRepository
 from app.schemas.product import ProductCreateRequest, ProductUpdateRequest
+from app.retrieval.qdrant_services import upsert_chunks
+from app.retrieval.embeddings import mesh_embed
+from app.utils.product_data import create_text
 
 
 class ProductService:
@@ -16,6 +19,8 @@ class ProductService:
     async def create_product(self, payload: ProductCreateRequest, created_by: str) -> Product:
         product = Product(**payload.model_dump(), created_by=created_by)
         return await self.products.create(product)
+        
+       
 
     async def get_product(self, product_id: str) -> Product:
         product = await self.products.get_by_id(product_id)

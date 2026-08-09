@@ -29,7 +29,7 @@
         const entries = Object.entries(byType).sort((a, b) => b[1] - a[1]);
         eventsList.innerHTML = entries.length
           ? entries.map(([type, count]) => `
-              <li class="row between" style="padding:8px 0;border-bottom:1px solid var(--line)">
+              <li class="row between" style="padding:8px 0;border-bottom:1px solid var(--border)">
                 <span>${escapeHtml(type)}</span>
                 <strong>${count.toLocaleString()}</strong>
               </li>`).join('')
@@ -229,6 +229,9 @@
     });
   }
 
+  // The edit page's form is rendered asynchronously (product data is
+  // fetched client-side), so it may not exist yet at DOMContentLoaded.
+  // Listen for the page's "ready" signal too.
   document.addEventListener('arp:edit-form-ready', initEditForm);
 
   document.addEventListener('DOMContentLoaded', () => {

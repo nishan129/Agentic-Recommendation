@@ -19,3 +19,8 @@ aiosqlite==0.20.0
 greenlet==3.1.1
 logfire>=4.40.0
 logfire[fastapi]>=4.40.0
+qdrant-client>=1.19.0
+caching>=0.1.dev8
+celery>=5.6.3
+meshapi>=0.1.11
+redis>=8.1.0

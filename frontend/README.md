@@ -1,4 +1,4 @@
-# Fernway — Agentic Recommendation Platform Frontend
+# SmartReco — AI Recommendation Platform Frontend
 
 A server-rendered (Jinja2 + FastAPI) frontend for the Agentic
 Recommendation backend — no React, no build step, no SPA framework. Just
@@ -13,10 +13,11 @@ modules in `static/js/`, calling the backend's `/api/v1` endpoints
 directly. That split keeps this frontend a thin, fast, mostly-static
 server that can be deployed and scaled independently of the backend.
 
-Design direction: warm editorial minimalism — a curated marketplace/
-journal feel (cream paper background, ink text, terracotta accent,
-Fraunces display serif + Work Sans body) rather than a generic SaaS
-dashboard look.
+Design direction: bold Gen-Z dark UI — a confident, AI-native feel rather
+than a generic SaaS dashboard. Near-black background with glowing
+violet-to-pink gradient accents, glassy blurred surfaces, Space Grotesk
+display type + Plus Jakarta Sans body, animated gradient blobs, and
+scroll-triggered reveal animations on every card grid.
 
 ## 2. Architecture
 
@@ -45,7 +46,37 @@ structure) still renders — only the dynamic data-driven regions
 state. Tracking and recommendations are additive layers, not
 load-bearing for basic navigation.
 
-## 3. Project structure
+## 2.5. Visual design system
+
+`static/css/main.css` defines the token layer — everything else
+(`components.css`, `responsive.css`) builds on these CSS variables, so
+re-theming means editing tokens in one place:
+
+| Token group | Values |
+|---|---|
+| Background | `--bg` (near-black), `--surface` / `--surface-hover` (card layers) |
+| Accent gradient | `--gradient-primary` (violet → pink), `--gradient-cool` (cyan → violet) |
+| Type | `--font-display` (Space Grotesk — headings, prices, stat numbers), `--font-body` (Plus Jakarta Sans) |
+| Motion | `--ease` (shared cubic-bezier for all transitions) |
+
+**Animation & interaction details:**
+- Hero background uses two blurred, slowly-drifting gradient "blobs"
+  (`.hero-blob`, pure CSS `@keyframes`) — no JS, no performance cost.
+- `.gradient-text` animates a shifting gradient across headline text.
+- Product/recommendation cards lift, glow, and reveal a gradient border
+  on hover; card images scale slightly on hover (`transform`, GPU-cheap).
+- **Scroll-reveal**: `app.js`'s `bindScrollReveal()` + `revealGrid()` fade
+  and slide in any freshly-rendered card grid the first time it enters
+  the viewport, with a small per-card stagger — implemented with a single
+  shared `IntersectionObserver`, and skipped entirely when the OS-level
+  `prefers-reduced-motion` setting is on.
+- Admin dashboard uses a **bento-grid** layout (`.bento-grid` /
+  `.bento-card`) instead of a plain stat row, each card with its own
+  icon tile and hover lift.
+- Buttons are pill-shaped with a gradient fill and a subtle press-scale
+  (`:active { transform: scale(0.96) }`) for tactile feedback.
+
+
 
 ```
 frontend/

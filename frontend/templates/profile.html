@@ -49,6 +49,9 @@
       </div>
     `;
 
+    // Interests derived from the reasons behind recent recommendation
+    // history — a lightweight, honest proxy for "what you're into"
+    // without a dedicated backend field.
     try {
       const history = await Api.getRecommendationHistory(20);
       const interestsEl = document.getElementById('profile-interests');
@@ -59,15 +62,15 @@
       });
       interestsEl.innerHTML = categories.size
         ? Array.from(categories).map((c) => `<span class="interest-chip">${AppUI.escapeHtml(c)}</span>`).join('')
-        : '<p style="margin:0;color:var(--ink-faint);">Keep exploring — we\'ll surface your interests here soon.</p>';
+        : '<p style="margin:0;color:var(--text-faint);">Keep exploring — we\'ll surface your interests here soon.</p>';
 
       const recsGrid = document.getElementById('profile-recent-recs');
       recsGrid.removeAttribute('aria-busy');
       recsGrid.innerHTML = history.length
-        ? `<p style="grid-column:1/-1;color:var(--ink-faint);">You've received ${history.length} recommendation${history.length === 1 ? '' : 's'} recently. <a href="/recommendations">View them all →</a></p>`
-        : `<p style="grid-column:1/-1;color:var(--ink-faint);">No recommendations yet. <a href="/products">Start exploring</a> to get personalized picks.</p>`;
+        ? `<p style="grid-column:1/-1;color:var(--text-faint);">You've received ${history.length} recommendation${history.length === 1 ? '' : 's'} recently. <a href="/recommendations">View them all →</a></p>`
+        : `<p style="grid-column:1/-1;color:var(--text-faint);">No recommendations yet. <a href="/products">Start exploring</a> to get personalized picks.</p>`;
     } catch (err) {
-      document.getElementById('profile-interests').innerHTML = '<p style="margin:0;color:var(--ink-faint);">Interests unavailable right now.</p>';
+      document.getElementById('profile-interests').innerHTML = '<p style="margin:0;color:var(--text-faint);">Interests unavailable right now.</p>';
     }
   });
 </script>

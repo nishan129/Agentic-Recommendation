@@ -91,6 +91,7 @@
     }
 
     grid.innerHTML = items.map((p, i) => productCardHtml(p, { position: i, source: 'listing' })).join('');
+    global.AppUI.revealGrid(grid);
     renderPagination(meta);
   }
 

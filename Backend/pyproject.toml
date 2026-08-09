@@ -16,6 +16,7 @@ dependencies = [
     "meshapi>=0.1.11",
     "openai>=2.53.0",
     "pydantic>=2.13.4",
+    "qdrant-client>=1.19.0",
     "redis>=8.1.0",
     "slowapi>=0.1.10",
     "sqlalchemy>=2.0.51",
