@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Edit product — Fernway Admin{% endblock %}
+{% block page_id %}admin-product-edit{% endblock %}
+
+{% block content %}
+{% set active_nav = 'admin-products' %}
+<div class="container section-tight">
+  <div class="admin-shell">
+    {% include "admin/_sidebar.html" %}
+
+    <div>
+      <span class="eyebrow">Admin</span>
+      <h1 style="font-size:2rem;">Edit product</h1>
+
+      <div id="product-edit-form-container" aria-busy="true">
+        <div class="skeleton" style="height: 480px; max-width:640px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // The form markup itself is a static partial rendered server-side would
+  // need the product data at request time; since this frontend fetches
+  // product data client-side (the backend is a separate service), we
+  // build the form fields directly here and hand off to admin.js's
+  // `product-edit-form` submit handler, which reads `data-product-id`.
+  (function () {
+    const productId = "{{ product_id }}";
+    const container = document.getElementById('product-edit-form-container');
+
+    function esc(s) {
+      const div = document.createElement('div');
+      div.textContent = s == null ? '' : String(s);
+      return div.innerHTML;
+    }
+
+    async function render() {
+      try {
+        const p = await Api.adminGetProduct(productId);
+        container.removeAttribute('aria-busy');
+        container.innerHTML = `
+          <form id="product-edit-form" novalidate data-product-id="${esc(p.id)}" style="max-width:640px;">
+            <div class="field">
+              <label for="pf-title">Title</label>
+              <input class="input" type="text" id="pf-title" name="title" required value="${esc(p.title)}">
+              <span class="error-text"></span>
+            </div>
+            <div class="field">
+              <label for="pf-description">Description</label>
+              <textarea class="input" id="pf-description" name="description" rows="4">${esc(p.description || '')}</textarea>
+            </div>
+            <div class="row gap-4" style="align-items:flex-start;">
+              <div class="field" style="flex:1;">
+                <label for="pf-category">Category</label>
+                <input class="input" type="text" id="pf-category" name="category" required value="${esc(p.category)}">
+                <span class="error-text"></span>
+              </div>
+              <div class="field" style="flex:1;">
+                <label for="pf-type">Product type</label>
+                <select class="input" id="pf-type" name="product_type">
+                  <option value="course" ${p.product_type === 'course' ? 'selected' : ''}>Course</option>
+                  <option value="product" ${p.product_type === 'product' ? 'selected' : ''}>Product</option>
+                </select>
+              </div>
+            </div>
+            <div class="row gap-4" style="align-items:flex-start;">
+              <div class="field" style="flex:1;">
+                <label for="pf-price">Price (₹)</label>
+                <input class="input" type="number" min="0" step="0.01" id="pf-price" name="price" required value="${p.price}">
+                <span class="error-text"></span>
+              </div>
+              <div class="field" style="flex:1;">
+                <label for="pf-rating">Rating (0–5)</label>
+                <input class="input" type="number" min="0" max="5" step="0.1" id="pf-rating" name="rating" value="${p.rating ?? ''}">
+              </div>
+              <div class="field" style="flex:1;">
+                <label for="pf-stock">Stock</label>
+                <input class="input" type="number" min="0" id="pf-stock" name="stock" value="${p.stock ?? ''}">
+              </div>
+            </div>
+            <div class="field">
+              <label for="pf-image">Image URL</label>
+              <input class="input" type="url" id="pf-image" name="image_url" value="${esc(p.image_url || '')}">
+            </div>
+            <div class="field">
+              <label for="pf-tags">Tags (comma-separated)</label>
+              <input class="input" type="text" id="pf-tags" name="tags" value="${esc((p.tags || []).join(', '))}">
+            </div>
+            <div class="field">
+              <label class="checkbox-row">
+                <input type="checkbox" id="pf-active" name="is_active" ${p.is_active ? 'checked' : ''}>
+                Active (visible to shoppers)
+              </label>
+            </div>
+            <div class="row gap-3">
+              <button type="submit" class="btn btn-accent">Save changes</button>
+              <a href="/admin/products" class="btn btn-outline">Cancel</a>
+            </div>
+          </form>
+        `;
+        // admin.js binds #product-edit-form on DOMContentLoaded, which has
+        // already fired by the time this async render completes — so wire
+        // the submit handler here too via the same initEditForm-equivalent
+        // logic by dispatching a custom event admin.js listens for.
+        document.dispatchEvent(new CustomEvent('arp:edit-form-ready'));
+      } catch (err) {
+        container.removeAttribute('aria-busy');
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">⚠</div>
+            <h3>Could not load this product</h3>
+            <p><a href="/admin/products">Back to products</a></p>
+          </div>`;
+      }
+    }
+
+    render();
+  })();
+</script>
+<script src="/static/js/admin.js"></script>
+{% endblock %}

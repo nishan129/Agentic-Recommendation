@@ -1,0 +1,252 @@
+/* ============================================================
+   Agentic Recommendation Platform — Design System
+   Direction: warm editorial minimalism. A curated marketplace/
+   journal feel rather than a generic SaaS dashboard.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* --- Palette --- */
+  --paper: #F7F3EA;
+  --paper-raised: #FFFFFF;
+  --ink: #211D18;
+  --ink-soft: #5B5548;
+  --ink-faint: #948C7C;
+  --line: #E4DDCC;
+  --line-strong: #D3C9AF;
+
+  --accent: #B5502F;       /* terracotta */
+  --accent-dark: #8F3D22;
+  --accent-soft: #F1DDD1;
+  --accent-tint: #FBF0E9;
+
+  --moss: #4C6650;         /* secondary accent — success / active states */
+  --moss-tint: #E7EEE6;
+
+  --gold: #C79A3D;         /* rating stars, highlights */
+
+  --danger: #A6392C;
+  --danger-tint: #FBEAE6;
+
+  /* --- Type --- */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Work Sans', -apple-system, sans-serif;
+
+  /* --- Spacing scale --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 6rem;
+
+  /* --- Radii & shadow --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-card: 0 1px 2px rgba(33, 29, 24, 0.04), 0 8px 24px rgba(33, 29, 24, 0.06);
+  --shadow-raised: 0 4px 12px rgba(33, 29, 24, 0.08), 0 16px 40px rgba(33, 29, 24, 0.10);
+
+  --max-width: 1240px;
+}
+
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: 1rem; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 var(--space-3);
+  color: var(--ink);
+}
+h1 { font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 500; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.7rem, 2.6vw, 2.3rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0 0 var(--space-3); color: var(--ink-soft); }
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-block;
+  margin-bottom: var(--space-2);
+}
+
+/* --- Layout helpers --- */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+.section { padding: var(--space-8) 0; }
+.section-tight { padding: var(--space-6) 0; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--ink); color: var(--paper);
+  padding: var(--space-3) var(--space-4);
+  z-index: 200; border-radius: 0 0 var(--radius-sm) 0;
+}
+.skip-link:focus { left: 0; }
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color .15s ease;
+  white-space: nowrap;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn-primary { background: var(--ink); color: var(--paper); }
+.btn-primary:hover { background: var(--accent-dark); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: var(--shadow-card); }
+.btn-outline { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn-outline:hover { border-color: var(--ink); background: var(--paper-raised); }
+.btn-ghost { background: transparent; color: var(--ink-soft); padding: 0.6rem 0.9rem; }
+.btn-ghost:hover { color: var(--ink); }
+.btn-danger { background: var(--danger-tint); color: var(--danger); }
+.btn-danger:hover { background: var(--danger); color: #fff; }
+.btn-sm { padding: 0.45rem 0.9rem; font-size: 0.85rem; }
+.btn-block { width: 100%; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+/* --- Forms --- */
+.field { margin-bottom: var(--space-5); }
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: var(--space-2);
+  color: var(--ink);
+}
+.field .hint { font-size: 0.8rem; color: var(--ink-faint); margin-top: var(--space-1); }
+.field .error-text { font-size: 0.8rem; color: var(--danger); margin-top: var(--space-1); display: none; }
+.field.has-error .error-text { display: block; }
+.field.has-error input, .field.has-error textarea, .field.has-error select {
+  border-color: var(--danger);
+}
+
+.input, textarea.input, select.input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper-raised);
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input:focus, textarea.input:focus, select.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+textarea.input { resize: vertical; min-height: 100px; }
+
+.checkbox-row { display: flex; align-items: center; gap: var(--space-2); }
+.checkbox-row input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+/* --- Badges --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+.badge-active { background: var(--moss-tint); color: var(--moss); }
+.badge-inactive { background: var(--line); color: var(--ink-faint); }
+.badge-category { background: var(--accent-tint); color: var(--accent-dark); }
+
+/* --- Utility --- */
+.text-center { text-align: center; }
+.mt-0 { margin-top: 0; }
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.between { justify-content: space-between; }
+.wrap { flex-wrap: wrap; }
+
+/* --- Loading / skeleton --- */
+.skeleton {
+  background: linear-gradient(100deg, var(--line) 30%, #EFE8D8 50%, var(--line) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--radius-md);
+}
+@keyframes shimmer {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+.skeleton-card { height: 320px; }
+.skeleton-line { height: 14px; margin-bottom: 8px; }
+
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Empty state --- */
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--ink-soft);
+}
+.empty-state .icon { font-size: 2.2rem; margin-bottom: var(--space-3); opacity: 0.6; }
+.empty-state h3 { color: var(--ink); margin-bottom: var(--space-2); }
+
+/* --- Star rating --- */
+.rating { color: var(--gold); font-weight: 600; font-size: 0.9rem; }
+
+::selection { background: var(--accent-soft); color: var(--accent-dark); }

@@ -1,0 +1,32 @@
+<div class="container navbar-inner">
+  <a href="/" class="brand">
+    <span class="brand-mark">S</span>
+    SmartReco
+  </a>
+
+  <nav class="nav-links" aria-label="Primary">
+    <a href="/" class="{{ 'active' if active_nav == 'home' }}">Home</a>
+    <a href="/products" class="{{ 'active' if active_nav == 'products' }}">Course</a>
+    <a href="/recommendations" class="{{ 'active' if active_nav == 'recommendations' }}" data-auth="user" hidden>Recommendations</a>
+    <a href="/profile" class="{{ 'active' if active_nav == 'profile' }}" data-auth="user" hidden>Profile</a>
+    <a href="/admin" class="{{ 'active' if active_nav == 'admin' }}" data-auth="admin" hidden>Dashboard</a>
+  </nav>
+
+  <div class="nav-actions">
+    <div data-auth="guest">
+      <a href="/login" class="btn btn-ghost">Sign in</a>
+      <a href="/register" class="btn btn-accent">Get started</a>
+    </div>
+    <div data-auth="user" hidden class="row gap-3">
+      <a href="/profile" class="user-chip">
+        <span class="avatar" data-user-initial>?</span>
+        <span data-user-name>Account</span>
+      </a>
+      <button class="btn btn-ghost btn-sm" data-action="logout">Log out</button>
+    </div>
+  </div>
+
+  <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</div>

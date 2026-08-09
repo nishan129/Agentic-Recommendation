@@ -25,7 +25,7 @@ class Product(Base, TimestampMixin):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     category: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     product_type: Mapped[ProductType] = mapped_column(
-        Enum(ProductType, native_enum=False, length=20), default=ProductType.PRODUCT, nullable=False
+        Enum(ProductType, native_enum=False, length=20), default=ProductType.COURSE, nullable=False
     )
     price: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     image_url: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)

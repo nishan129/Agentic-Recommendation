@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Your recommendations — SmartReco{% endblock %}
+{% block page_id %}recommendations{% endblock %}
+
+{% block content %}
+<div class="container section-tight">
+  <span class="eyebrow">Personalized</span>
+  <h1 style="font-size:2.2rem;">Recommended for you</h1>
+  <p style="max-width:520px;">Based on your recent activity — the products and courses you've viewed, searched for, and clicked into.</p>
+
+  <div class="product-grid" style="margin-top: var(--space-6);" data-recommendations-target data-recommendations-limit="12" aria-busy="true">
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+  </div>
+</div>
+{% endblock %}

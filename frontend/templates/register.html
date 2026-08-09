@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create your account — SmartReco{% endblock %}
+{% block page_id %}register{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-shell">
+    <h1>Get started</h1>
+    <p class="lede">Create a free account — recommendations improve the moment you start browsing.</p>
+
+    <form id="register-form" novalidate>
+      <div class="field">
+        <label for="name">Full name</label>
+        <input class="input" type="text" id="name" name="name" required autocomplete="name">
+        <span class="error-text"></span>
+      </div>
+      <div class="field">
+        <label for="reg-email">Email</label>
+        <input class="input" type="email" id="reg-email" name="email" required autocomplete="email">
+        <span class="error-text"></span>
+      </div>
+      <div class="field">
+        <label for="reg-password">Password</label>
+        <input class="input" type="password" id="reg-password" name="password" required minlength="8" autocomplete="new-password">
+        <span class="hint">At least 8 characters.</span>
+        <span class="error-text"></span>
+      </div>
+      <div class="field">
+        <label for="confirm-password">Confirm password</label>
+        <input class="input" type="password" id="confirm-password" name="confirm_password" required autocomplete="new-password">
+        <span class="error-text"></span>
+      </div>
+      <button type="submit" class="btn btn-accent btn-block">
+        <span class="btn-label">Create account</span>
+      </button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="/login">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

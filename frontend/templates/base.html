@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartReco — Learn what fits you{% endblock %}</title>
+  <meta name="description" content="{% block description %}A personalized marketplace for courses and products, tailored to what you actually explore.{% endblock %}">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/responsive.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body data-page="{% block page_id %}{% endblock %}" {% block body_data %}{% endblock %}>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <header class="navbar">
+    {% include "components/navbar.html" %}
+  </header>
+
+  <div class="flash-stack" id="flash-stack" aria-live="polite"></div>
+
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    {% include "components/footer.html" %}
+  </footer>
+
+  <!-- Config for JS modules -->
+  <script>
+    window.__API_BASE_URL__ = "{{ api_base_url | default('/api/v1') }}";
+  </script>
+
+  <!-- Core modules — order matters: api -> events -> auth -> app -> page-specific -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/events.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/recommendations.js"></script>
+  {% block extra_scripts %}{% endblock %}
+
+  <script>
+    // Global event-tracking bootstrap. Runs on every page, independent of
+    // any page-specific script below, so tracking never depends on a page
+    // remembering to wire it up.
+    document.addEventListener('DOMContentLoaded', function () {
+      EventTracker.init();
+
+      var body = document.body;
+      if (body.dataset.page === 'product-detail' && body.dataset.productId) {
+        EventTracker.track({ event_type: 'product_view', product_id: body.dataset.productId });
+        EventTracker.startTimeSpent('product:' + body.dataset.productId, body.dataset.productId);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -5,15 +5,18 @@ All handlers respond with the consistent envelope:
     {"success": false, "message": "...", "error_code": "..."}
 and never leak stack traces or raw DB errors to the client.
 """
-import logging
-
+import logfire
+import os 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+load_dotenv()
+logfire.configure(token="pylf_v1_us_mW3J9BlPrwfdjGx2Rx7crJxL51n3bvCd6F69rfY6KyVQ")
 
-logger = logging.getLogger("app.errors")
+
 
 
 class AppError(Exception):
@@ -84,7 +87,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(IntegrityError)
     async def integrity_error_handler(request: Request, exc: IntegrityError):
-        logger.warning("Integrity error on %s: %s", request.url.path, exc.__class__.__name__)
+        logfire.warning("Integrity error on %s: %s", request.url.path, exc.__class__.__name__)
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content=_envelope("Resource already exists or violates a constraint", "INTEGRITY_ERROR"),
@@ -92,7 +95,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(SQLAlchemyError)
     async def db_error_handler(request: Request, exc: SQLAlchemyError):
-        logger.error("Database error on %s: %s", request.url.path, exc.__class__.__name__)
+        logfire.error("Database error on %s: %s", request.url.path, exc.__class__.__name__)
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=_envelope("A database error occurred", "DATABASE_ERROR"),
@@ -100,7 +103,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception):
-        logger.exception("Unhandled exception on %s", request.url.path)
+        logfire.exception("Unhandled exception on %s", request.url.path)
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=_envelope("An unexpected error occurred", "INTERNAL_ERROR"),

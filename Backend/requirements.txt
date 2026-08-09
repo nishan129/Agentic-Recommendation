@@ -17,3 +17,5 @@ pytest-asyncio==0.25.0
 httpx==0.28.1
 aiosqlite==0.20.0
 greenlet==3.1.1
+logfire>=4.40.0
+logfire[fastapi]>=4.40.0

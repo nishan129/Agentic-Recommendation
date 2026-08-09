@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Admin dashboard — Fernway{% endblock %}
+{% block page_id %}admin-dashboard{% endblock %}
+
+{% block content %}
+{% set active_nav = 'admin' %}
+<div class="container section-tight">
+  <div class="admin-shell">
+    {% include "admin/_sidebar.html" %}
+
+    <div>
+      <span class="eyebrow">Admin</span>
+      <h1 style="font-size:2rem;">Dashboard</h1>
+
+      <div class="stat-grid" id="admin-dashboard-stats" style="margin: var(--space-6) 0;">
+        <div class="stat-card"><div class="stat-value" data-stat="total_users">–</div><div class="stat-label">Users</div></div>
+        <div class="stat-card"><div class="stat-value" data-stat="total_products">–</div><div class="stat-label">Products</div></div>
+        <div class="stat-card"><div class="stat-value" data-stat="total_events">–</div><div class="stat-label">Events</div></div>
+        <div class="stat-card"><div class="stat-value" data-stat="total_recommendations">–</div><div class="stat-label">Recommendations</div></div>
+      </div>
+
+      <h3>Events by type</h3>
+      <ul id="admin-event-stats" style="background:var(--paper-raised); border:1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5);">
+        <li>Loading…</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/admin.js"></script>
+{% endblock %}

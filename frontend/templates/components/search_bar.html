@@ -1,0 +1,14 @@
+{# Expects (optional): placeholder, value #}
+<div class="search-bar" id="product-search-bar">
+  <span class="search-icon" aria-hidden="true">⌕</span>
+  <input
+    type="search"
+    id="product-search-input"
+    class="input"
+    placeholder="{{ placeholder | default('Search courses and products…') }}"
+    value="{{ value | default('') }}"
+    aria-label="Search products and courses"
+    autocomplete="off"
+  >
+  <span class="search-spinner"><span class="spinner"></span></span>
+</div>

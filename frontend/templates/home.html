@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}SmartReco — Discover what fits you{% endblock %}
+{% block page_id %}home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <span class="eyebrow">Agentic recommendations</span>
+      <h1>Discover what fits you.</h1>
+      <p class="lede">Explore courses and products personalized around your interests — the more you browse, the sharper it gets.</p>
+      <div class="hero-actions">
+        <a href="/products" class="btn btn-accent">Explore products</a>
+        <a href="/recommendations" class="btn btn-outline">View recommendations</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <span class="eyebrow">Browse by category</span>
+    <h2>Popular categories</h2>
+    <div class="category-grid">
+      <a href="/products?category=programming" class="category-pill" data-track-click data-product-id="" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'programming'}})">
+        <span class="cat-icon">💻</span> Programming
+      </a>
+      <a href="/products?category=data-science" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'data-science'}})">
+        <span class="cat-icon">📊</span> Data Science
+      </a>
+      <a href="/products?category=ai-ml" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'ai-ml'}})">
+        <span class="cat-icon">🤖</span> AI &amp; ML
+      </a>
+      <a href="/products?category=web-development" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'web-development'}})">
+        <span class="cat-icon">🌐</span> Web Development
+      </a>
+      <a href="/products?category=cloud" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'cloud'}})">
+        <span class="cat-icon">☁️</span> Cloud
+      </a>
+      <a href="/products?category=business" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'business'}})">
+        <span class="cat-icon">📈</span> Business
+      </a>
+      <a href="/products?category=design" class="category-pill" onclick="EventTracker.track({event_type:'category_view', metadata:{category:'design'}})">
+        <span class="cat-icon">🎨</span> Design
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="row between" style="margin-bottom: var(--space-5);">
+      <div>
+        <span class="eyebrow">For you</span>
+        <h2>Recommended for you</h2>
+        <p style="margin:0;">Based on your recent activity.</p>
+      </div>
+    </div>
+    <div class="product-grid" data-recommendations-target data-recommendations-limit="4" aria-busy="true">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="row between" style="margin-bottom: var(--space-5);">
+      <div>
+        <span class="eyebrow">Trending</span>
+        <h2>Popular right now</h2>
+      </div>
+      <a href="/products" class="btn btn-outline btn-sm">View all</a>
+    </div>
+    <div class="product-grid" id="popular-products-grid" aria-busy="true">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const grid = document.getElementById('popular-products-grid');
+    try {
+      const data = await Api.getProducts({ limit: 8, sort_by: 'rating', sort_desc: true });
+      const items = (data && data.items) || [];
+      grid.innerHTML = items.length
+        ? items.map((p, i) => AppUI.productCardHtml(p, { position: i, source: 'homepage' })).join('')
+        : '<div class="empty-state"><div class="icon">✦</div><h3>No products yet</h3><p>Check back soon.</p></div>';
+    } catch (err) {
+      grid.innerHTML = '<div class="empty-state"><div class="icon">⚠</div><h3>Products are temporarily unavailable</h3></div>';
+    } finally {
+      grid.removeAttribute('aria-busy');
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Add product — Fernway Admin{% endblock %}
+{% block page_id %}admin-product-create{% endblock %}
+
+{% block content %}
+{% set active_nav = 'admin-products' %}
+<div class="container section-tight">
+  <div class="admin-shell">
+    {% include "admin/_sidebar.html" %}
+
+    <div>
+      <span class="eyebrow">Admin</span>
+      <h1 style="font-size:2rem;">Add a product</h1>
+
+      {% set form_id = 'product-create-form' %}
+      {% set submit_label = 'Create product' %}
+      {% include "admin/_product_form.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/admin.js"></script>
+{% endblock %}

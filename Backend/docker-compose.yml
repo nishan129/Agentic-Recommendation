@@ -34,6 +34,7 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       ENVIRONMENT: development
       DEBUG: "true"
+      CORS_ORIGINS: '["http://localhost:3000"]'
     # Run migrations, then start the API. Swap for a separate one-off
     # `docker compose run api alembic upgrade head` in CI if you'd rather
     # keep migrations out of the container's startup path.

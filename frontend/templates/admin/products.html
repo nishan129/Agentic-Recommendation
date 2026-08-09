@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Manage products — Fernway Admin{% endblock %}
+{% block page_id %}admin-products{% endblock %}
+
+{% block content %}
+{% set active_nav = 'admin-products' %}
+<div class="container section-tight">
+  <div class="admin-shell">
+    {% include "admin/_sidebar.html" %}
+
+    <div>
+      <div class="admin-toolbar">
+        <div>
+          <span class="eyebrow">Admin</span>
+          <h1 style="font-size:2rem; margin-bottom:0;">Products</h1>
+        </div>
+        <a href="/admin/products/create" class="btn btn-accent">+ Add product</a>
+      </div>
+
+      <input type="search" id="admin-product-search" class="input" placeholder="Search products…" style="max-width:320px; margin-bottom: var(--space-4);">
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-products-tbody">
+          <tr><td colspan="5"><span class="spinner"></span> Loading…</td></tr>
+        </tbody>
+      </table>
+
+      <nav class="pagination" id="admin-products-pagination" aria-label="Pagination"></nav>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="delete-modal" hidden>
+  <div class="modal">
+    <h3>Delete product?</h3>
+    <p>Are you sure you want to delete "<strong data-modal-title></strong>"? This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" data-cancel-delete type="button">Cancel</button>
+      <button class="btn btn-danger" data-confirm-delete type="button">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/admin.js"></script>
+{% endblock %}

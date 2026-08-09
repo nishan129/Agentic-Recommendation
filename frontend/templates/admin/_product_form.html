@@ -1,0 +1,68 @@
+{# Expects: form_id ('product-create-form' | 'product-edit-form'),
+   submit_label, optional `product` dict to prefill for edit,
+   optional `product_id` (edit only, rendered as data attribute) #}
+{% set product = product | default({}) %}
+<form id="{{ form_id }}" novalidate {% if product_id %}data-product-id="{{ product_id }}"{% endif %} style="max-width: 640px;">
+  <div class="field">
+    <label for="pf-title">Title</label>
+    <input class="input" type="text" id="pf-title" name="title" required value="{{ product.title | default('') }}">
+    <span class="error-text"></span>
+  </div>
+
+  <div class="field">
+    <label for="pf-description">Description</label>
+    <textarea class="input" id="pf-description" name="description" rows="4">{{ product.description | default('') }}</textarea>
+  </div>
+
+  <div class="row gap-4" style="align-items:flex-start;">
+    <div class="field" style="flex:1;">
+      <label for="pf-category">Category</label>
+      <input class="input" type="text" id="pf-category" name="category" required value="{{ product.category | default('') }}" placeholder="e.g. programming">
+      <span class="error-text"></span>
+    </div>
+    <div class="field" style="flex:1;">
+      <label for="pf-type">Course type</label>
+      <select class="input" id="pf-type" name="product_type">
+        <option value="course" {{ 'selected' if product.product_type == 'course' }}>Course</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row gap-4" style="align-items:flex-start;">
+    <div class="field" style="flex:1;">
+      <label for="pf-price">Price (₹)</label>
+      <input class="input" type="number" min="0" step="0.01" id="pf-price" name="price" required value="{{ product.price | default('') }}">
+      <span class="error-text"></span>
+    </div>
+    <div class="field" style="flex:1;">
+      <label for="pf-rating">Rating (0–5, optional)</label>
+      <input class="input" type="number" min="0" max="5" step="0.1" id="pf-rating" name="rating" value="{{ product.rating | default('') }}">
+    </div>
+    <div class="field" style="flex:1;">
+      <label for="pf-stock">Stock (optional)</label>
+      <input class="input" type="number" min="0" id="pf-stock" name="stock" value="{{ product.stock | default('') }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="pf-image">Image URL</label>
+    <input class="input" type="url" id="pf-image" name="image_url" value="{{ product.image_url | default('') }}" placeholder="https://…">
+  </div>
+
+  <div class="field">
+    <label for="pf-tags">Tags (comma-separated, optional)</label>
+    <input class="input" type="text" id="pf-tags" name="tags" value="{{ (product.tags | join(', ')) if product.tags else '' }}" placeholder="python, backend, api">
+  </div>
+
+  <div class="field">
+    <label class="checkbox-row">
+      <input type="checkbox" id="pf-active" name="is_active" {{ 'checked' if product.is_active | default(true) }}>
+      Active (visible to shoppers)
+    </label>
+  </div>
+
+  <div class="row gap-3">
+    <button type="submit" class="btn btn-accent">{{ submit_label | default('Save product') }}</button>
+    <a href="/admin/products" class="btn btn-outline">Cancel</a>
+  </div>
+</form>

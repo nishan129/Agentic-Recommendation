@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Your profile — SmartReco{% endblock %}
+{% block page_id %}profile{% endblock %}
+
+{% block content %}
+<div class="container section-tight" id="profile-root" aria-busy="true">
+  <div class="skeleton" style="height: 130px; margin-bottom: var(--space-6);"></div>
+  <div class="skeleton" style="height: 220px;"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.addEventListener('arp:auth-resolved', async (e) => {
+    const root = document.getElementById('profile-root');
+    const user = e.detail.user;
+
+    if (!user) {
+      location.href = '/login?next=/profile';
+      return;
+    }
+
+    root.removeAttribute('aria-busy');
+    const createdAt = new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+    root.innerHTML = `
+      <div class="profile-header">
+        <div class="profile-avatar">${AppUI.escapeHtml(user.name.charAt(0).toUpperCase())}</div>
+        <div>
+          <h1 style="font-size:1.8rem; margin-bottom:4px;">${AppUI.escapeHtml(user.name)}</h1>
+          <p style="margin:0;">${AppUI.escapeHtml(user.email)} &middot; Member since ${createdAt}</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: var(--space-6);">
+        <h3>Your interests</h3>
+        <div id="profile-interests">
+          <span class="skeleton" style="display:inline-block;width:90px;height:28px;border-radius:999px;margin-right:6px;"></span>
+          <span class="skeleton" style="display:inline-block;width:70px;height:28px;border-radius:999px;"></span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Recommendation summary</h3>
+        <div class="product-grid" id="profile-recent-recs" aria-busy="true">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+      </div>
+    `;
+
+    try {
+      const history = await Api.getRecommendationHistory(20);
+      const interestsEl = document.getElementById('profile-interests');
+      const categories = new Set();
+      (history || []).forEach((h) => {
+        const match = (h.reason || '').match(/interest in ([\w\s&]+)$/i);
+        if (match) categories.add(match[1].trim());
+      });
+      interestsEl.innerHTML = categories.size
+        ? Array.from(categories).map((c) => `<span class="interest-chip">${AppUI.escapeHtml(c)}</span>`).join('')
+        : '<p style="margin:0;color:var(--ink-faint);">Keep exploring — we\'ll surface your interests here soon.</p>';
+
+      const recsGrid = document.getElementById('profile-recent-recs');
+      recsGrid.removeAttribute('aria-busy');
+      recsGrid.innerHTML = history.length
+        ? `<p style="grid-column:1/-1;color:var(--ink-faint);">You've received ${history.length} recommendation${history.length === 1 ? '' : 's'} recently. <a href="/recommendations">View them all →</a></p>`
+        : `<p style="grid-column:1/-1;color:var(--ink-faint);">No recommendations yet. <a href="/products">Start exploring</a> to get personalized picks.</p>`;
+    } catch (err) {
+      document.getElementById('profile-interests').innerHTML = '<p style="margin:0;color:var(--ink-faint);">Interests unavailable right now.</p>';
+    }
+  });
+</script>
+{% endblock %}

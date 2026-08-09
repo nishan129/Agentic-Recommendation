@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Browse products & courses — SmartReco{% endblock %}
+{% block page_id %}products{% endblock %}
+
+{% block content %}
+<div class="container section-tight">
+  <span class="eyebrow">Catalog</span>
+  <h1 style="font-size:2.2rem;"> Courses</h1>
+
+  <div style="margin: var(--space-5) 0 var(--space-6);">
+    {% include "components/search_bar.html" %}
+  </div>
+      <div class="product-grid" id="product-grid" aria-busy="true">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+
+      {% include "components/pagination.html" %}
+    </div>
+  </div>
+</div>
+
+<template id="empty-state-template">
+  <div class="empty-state" style="grid-column: 1 / -1;">
+    <div class="icon">🔍</div>
+    <h3></h3>
+    <p></p>
+  </div>
+</template>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/products.js"></script>
+{% endblock %}

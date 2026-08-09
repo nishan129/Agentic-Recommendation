@@ -1,0 +1,24 @@
+{# Expects: product (dict with id, title, description, category, product_type, price, image_url, rating) #}
+<article class="product-card" data-product-id="{{ product.id }}" data-source="{{ card_source | default('listing') }}">
+  <a href="/products/{{ product.id }}" class="product-card-media-link" data-track-click>
+    <div class="product-card-media">
+      {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="" loading="lazy">
+      {% else %}
+        <div class="placeholder">{{ product.title[0] | upper }}</div>
+      {% endif %}
+      <span class="product-card-type">{{ product.product_type | default('product') }}</span>
+    </div>
+  </a>
+  <div class="product-card-body">
+    <span class="badge badge-category">{{ product.category }}</span>
+    <h3 class="product-card-title">
+      <a href="/products/{{ product.id }}" data-track-click>{{ product.title }}</a>
+    </h3>
+    <p class="product-card-desc">{{ product.description | default('') }}</p>
+    <div class="product-card-meta">
+      <span class="rating">{% if product.rating %}★ {{ '%.1f' | format(product.rating) }}{% endif %}</span>
+      <span class="product-card-price">₹{{ '{:,.0f}'.format(product.price) }}</span>
+    </div>
+  </div>
+</article>

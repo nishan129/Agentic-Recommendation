@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ product_title | default('Product') }} — SmartReco{% endblock %}
+{% block page_id %}product-detail{% endblock %}
+{% block body_data %}data-product-id="{{ product_id }}"{% endblock %}
+
+{% block content %}
+<div class="container section-tight" id="product-detail-root" aria-busy="true">
+  <div class="skeleton" style="height: 420px; margin-bottom: var(--space-6);"></div>
+</div>
+
+<div class="container related-section" id="related-products-section" hidden>
+  <span class="eyebrow">You may also like</span>
+  <h2>Related products</h2>
+  <div class="product-grid" id="related-products-grid">
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+  </div>
+</div>
+
+<div class="container related-section" id="recommended-section">
+  <span class="eyebrow">Recommended for you</span>
+  <h2>Based on your activity</h2>
+  <div class="product-grid" data-recommendations-target data-recommendations-limit="4" aria-busy="true">
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    const productId = document.body.dataset.productId;
+    const root = document.getElementById('product-detail-root');
+
+    function starDisplay(rating) {
+      if (!rating) return '';
+      return `<span class="rating">★ ${Number(rating).toFixed(1)}</span>`;
+    }
+
+    async function loadProduct() {
+      try {
+        const p = await Api.getProduct(productId);
+        document.title = `${p.title} — SmartReco`;
+
+        root.removeAttribute('aria-busy');
+        root.innerHTML = `
+          <div class="product-detail-grid">
+            <div class="product-detail-media">
+              ${p.image_url ? `<img src="${AppUI.escapeHtml(p.image_url)}" alt="${AppUI.escapeHtml(p.title)}">` : `<div class="placeholder" style="height:100%;font-size:4rem;">${AppUI.escapeHtml(p.title.charAt(0))}</div>`}
+            </div>
+            <div>
+              <span class="badge badge-category">${AppUI.escapeHtml(p.category)}</span>
+              <h1 style="margin-top:12px;">${AppUI.escapeHtml(p.title)}</h1>
+              <div class="product-detail-meta-row">
+                ${starDisplay(p.rating)}
+                <span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'Available' : 'Unavailable'}</span>
+              </div>
+              <div class="product-detail-price">${AppUI.formatPrice(p.price)}</div>
+              <p style="margin: var(--space-4) 0 var(--space-5); max-width: 480px;">${AppUI.escapeHtml(p.description || 'No description provided yet.')}</p>
+              <div class="row gap-3">
+                <button class="btn btn-accent" id="start-learning-btn">${p.product_type === 'course' ? 'Start learning' : 'Add to cart'}</button>
+                <button class="btn btn-outline" id="wishlist-btn">Save for later</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('start-learning-btn').addEventListener('click', () => {
+          EventTracker.track({
+            event_type: p.product_type === 'course' ? 'course_start' : 'add_to_cart',
+            product_id: p.id,
+          });
+          Flash.show(p.product_type === 'course' ? "You're enrolled — happy learning!" : 'Added to cart.', 'success');
+        });
+        document.getElementById('wishlist-btn').addEventListener('click', () => {
+          EventTracker.track({ event_type: 'wishlist_add', product_id: p.id });
+          Flash.show('Saved to your wishlist.', 'success');
+        });
+
+        loadRelated(p.category, p.id);
+      } catch (err) {
+        root.removeAttribute('aria-busy');
+        root.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">⚠</div>
+            <h3>We couldn't load this product</h3>
+            <p>It may have been removed, or something went wrong. <a href="/products">Browse the catalog</a> instead.</p>
+          </div>`;
+      }
+    }
+
+    async function loadRelated(category, excludeId) {
+      const section = document.getElementById('related-products-section');
+      const grid = document.getElementById('related-products-grid');
+      try {
+        const data = await Api.getProducts({ category, limit: 5 });
+        const items = (data.items || []).filter((p) => p.id !== excludeId).slice(0, 4);
+        if (items.length === 0) { section.hidden = true; return; }
+        section.hidden = false;
+        grid.innerHTML = items.map((p, i) => AppUI.productCardHtml(p, { position: i, source: 'related' })).join('');
+      } catch (err) {
+        section.hidden = true;
+      }
+    }
+
+    loadProduct();
+  })();
+</script>
+{% endblock %}

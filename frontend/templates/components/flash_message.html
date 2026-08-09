@@ -1,0 +1,10 @@
+{# Optional server-rendered flash, for the (rare) case a page route sets one
+   via query string, e.g. /login?flash=Session+expired&type=info.
+   Client-side flashes (the common case) are pushed via JS through
+   window.Flash.show() in app.js into #flash-stack instead. #}
+{% if flash_message %}
+<div class="flash flash-{{ flash_type | default('info') }}" role="status">
+  <span>{{ flash_message }}</span>
+  <button onclick="this.parentElement.remove()" aria-label="Dismiss">&times;</button>
+</div>
+{% endif %}

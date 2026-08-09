@@ -1,0 +1,9 @@
+{# Expects: rec (dict with product_id, title, score, reason, price) #}
+<article class="recommendation-card" data-product-id="{{ rec.product_id }}" data-source="recommendation">
+  <span class="score-chip">{{ (rec.score * 100) | round | int }}% match</span>
+  <h3 class="product-card-title">
+    <a href="/products/{{ rec.product_id }}" data-track-click>{{ rec.title }}</a>
+  </h3>
+  <p class="recommendation-reason">{{ rec.reason }}</p>
+  <a href="/products/{{ rec.product_id }}" class="btn btn-outline btn-sm btn-block" data-track-click>View course</a>
+</article>

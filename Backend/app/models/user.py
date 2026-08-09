@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 
 class UserRole(str, enum.Enum):
-    USER = "user"
-    ADMIN = "admin"
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 
 class User(Base, TimestampMixin):

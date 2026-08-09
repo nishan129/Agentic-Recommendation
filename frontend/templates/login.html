@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Sign in — SmartReco{% endblock %}
+{% block page_id %}login{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="auth-shell">
+    <h1>Welcome back</h1>
+    <p class="lede">Sign in to see recommendations built around you.</p>
+
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input class="input" type="email" id="email" name="email" required autocomplete="email">
+        <span class="error-text"></span>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input class="input" type="password" id="password" name="password" required autocomplete="current-password">
+        <span class="error-text"></span>
+      </div>
+      <button type="submit" class="btn btn-accent btn-block">
+        <span class="btn-label">Sign in</span>
+      </button>
+    </form>
+
+    <p class="auth-switch">Don't have an account? <a href="/register">Create one</a></p>
+  </div>
+</div>
+{% endblock %}
