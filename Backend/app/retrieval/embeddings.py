@@ -9,16 +9,8 @@ EMBEDDING_DIMENSIONS = 1024
 
 client = MeshAPI(base_url=MESHAPI_BASE_URL, token='rsk_01KZK6QCFTWYEADYHEQEABRAQ0')
 
-async def mesh_embed(texts: list[str]) -> list[list[float]]:
-    resp = await client.embeddings.acreate(
+def mesh_embed(texts: list[str]) -> list[list[float]]:
+    resp = client.embeddings.create(
         EmbeddingsParams(model=EMBEDDING_MODEL, input=texts, dimensions=EMBEDDING_DIMENSIONS)
     )
     return [d.embedding for d in sorted(resp.data, key=lambda d: d.index)]
-
-
-
-
-
-
-
-

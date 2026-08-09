@@ -1,13 +1,10 @@
 from fastapi import FastAPI
-import logfire
-import os
-from dotenv import load_dotenv
+
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from app.utils.logging import configure_logging, RequestLoggingMiddleware
 
-load_dotenv()
-logfire.configure(token="pylf_v1_us_mW3J9BlPrwfdjGx2Rx7crJxL51n3bvCd6F69rfY6KyVQ")
 
 from app.api.v1.health import router as health_router
 from app.api.v1.router import api_router
@@ -19,7 +16,8 @@ from app.core.limiter import limiter
 
 
 def create_app() -> FastAPI:
-    
+
+    configure_logging(debug=settings.DEBUG)
 
     app = FastAPI(
         title=settings.APP_NAME,
@@ -43,9 +41,7 @@ def create_app() -> FastAPI:
     )
 
     # Request logging
-    
-   
-    logfire.instrument_fastapi(app)
+    app.add_middleware(RequestLoggingMiddleware)
 
     # Consistent error envelope for all error types
     register_exception_handlers(app)
@@ -58,3 +54,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+

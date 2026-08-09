@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, status
+from fastapi import BackgroundTasks
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -57,11 +58,12 @@ async def recommendation_stats(db: AsyncSession = Depends(get_db)):
 @router.post("/products", response_model=ProductRead, status_code=status.HTTP_201_CREATED)
 async def create_product(
     payload: ProductCreateRequest,
+    background_tasks: BackgroundTasks,
     admin: User = Depends(get_current_admin),
     db: AsyncSession = Depends(get_db),
 ):
     service = ProductService(db)
-    return await service.create_product(payload, created_by=admin.id)
+    return await service.create_product(payload, created_by=admin.id,background_tasks=background_tasks)
 
 
 @router.get("/products", response_model=PaginatedResponse[ProductRead])
