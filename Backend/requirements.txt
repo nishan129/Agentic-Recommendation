@@ -24,3 +24,21 @@ caching>=0.1.dev8
 celery>=5.6.3
 meshapi>=0.1.11
 redis>=8.1.0
+pydantic[email]==2.10.4
+pydantic-settings==2.7.1
+python-jose[cryptography]==3.3.0
+pwdlib[argon2]==0.2.1
+python-multipart==0.0.20
+python-dotenv==1.0.1
+slowapi==0.1.9
+structlog==24.4.0
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1
+aiosqlite==0.20.0
+greenlet==3.1.1
+
+# --- Agentic recommendations ---
+langchain_openai
+meshapi
+langchain_core

@@ -1,30 +1,38 @@
 """
-RecommendationService - the seam where LangGraph agents will plug in later.
+RecommendationService — routes between two engines behind a feature flag
+(settings.RECOMMENDATION_ENGINE = "heuristic" | "agentic"):
 
-Today this implements a simple, explainable heuristic:
+    heuristic: category-affinity scoring (see _get_heuristic_recommendations)
+    agentic:   RecommendationAgent pipeline — event history -> LLM intent
+               reasoning -> Qdrant vector search -> LLM narrative generation
+               (see app/agents/recommendation_agent.py)
 
-    User Events -> extract preferred categories/products
-                -> query candidate products
-                -> rank by category-affinity + rating
-                -> persist + return top-N
+The agentic path ALWAYS falls back to the heuristic path on any failure
+(LLM timeout, Qdrant unreachable, bad JSON output, etc.) — a recommendation
+page must never break just because an external AI service hiccuped. This
+mirrors the same "never let a background system break the user-facing
+site" principle used throughout event tracking.
 
 The public method `get_recommendations` is the only thing the API route
-calls. Swapping the body of this method for a LangGraph agent invocation
-(User Profile Tool -> Event History Tool -> Product Search Tool -> Vector
-Search Tool -> Ranking Tool) will not require any change to the router,
-schemas, or repository layer.
+calls, returning a RecommendationResult that includes the narrative (only
+populated by the agentic engine) alongside the usual per-product items.
 """
+import logging
 from collections import Counter
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.models.recommendation import Recommendation
+from app.models.recommendation import Recommendation, RecommendationBatch
 from app.repositories.event_repository import EventRepository
 from app.repositories.product_repository import ProductRepository
 from app.repositories.recommendation_repository import RecommendationRepository
 from app.schemas.recommendation import RecommendationItem
+
+logger = logging.getLogger(__name__)
 
 # Event types that signal positive interest, weighted by strength of signal.
 INTEREST_WEIGHTS: dict[str, float] = {
@@ -41,6 +49,13 @@ INTEREST_WEIGHTS: dict[str, float] = {
 }
 
 
+@dataclass
+class RecommendationResult:
+    items: list[RecommendationItem] = field(default_factory=list)
+    narrative: Optional[str] = None
+    engine: str = "heuristic"
+
+
 class RecommendationService:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -48,11 +63,57 @@ class RecommendationService:
         self.products = ProductRepository(db)
         self.recommendations = RecommendationRepository(db)
 
-    async def get_recommendations(
-        self, user_id: str, limit: int | None = None
-    ) -> list[RecommendationItem]:
+    async def get_recommendations(self, user_id: str, limit: int | None = None) -> RecommendationResult:
         limit = limit or settings.RECOMMENDATION_DEFAULT_LIMIT
 
+        if settings.RECOMMENDATION_ENGINE == "agentic":
+            try:
+                return await self._get_agentic_recommendations(user_id, limit)
+            except Exception:
+                logger.exception(
+                    "Agentic recommendation pipeline failed for user %s — falling back to heuristic", user_id
+                )
+
+        items = await self._get_heuristic_recommendations(user_id, limit)
+        return RecommendationResult(items=items, narrative=None, engine="heuristic")
+
+    async def _get_agentic_recommendations(self, user_id: str, limit: int) -> RecommendationResult:
+        # Imported lazily so environments running heuristic-only never need
+        # GROQ_API_KEY / MESHAPI_TOKEN / a reachable Qdrant just to import
+        # this service module.
+        from app.agents.recommendation_agent import RecommendationAgent
+
+        agent = RecommendationAgent()
+        result = await agent.generate(self.db, user_id, top_k=limit)
+
+        if result.is_cold_start or not result.products:
+            items = await self._get_heuristic_recommendations(user_id, limit)
+            return RecommendationResult(items=items, narrative=result.narrative, engine="agentic_cold_start")
+
+        items = [
+            RecommendationItem(
+                product_id=p.product_id,
+                title=p.title,
+                score=p.similarity_score,
+                reason=p.reason,
+                source="agentic",
+                model_version=settings.RECOMMENDATION_MODEL_VERSION,
+                price=p.price,
+                category=p.category,
+            )
+            for p in result.products
+        ]
+
+        await self._persist_batch(
+            user_id=user_id,
+            items=items,
+            narrative=result.narrative,
+            interest_summary=result.interest_summary,
+            confidence=result.confidence,
+        )
+        return RecommendationResult(items=items, narrative=result.narrative, engine="agentic")
+
+    async def _get_heuristic_recommendations(self, user_id: str, limit: int) -> list[RecommendationItem]:
         recent_events = await self.events.get_recent_for_user(user_id, limit=200)
 
         category_scores: Counter[str] = Counter()
@@ -80,6 +141,9 @@ class RecommendationService:
                     reason="Popular pick while we learn your preferences",
                     source="heuristic_cold_start",
                     model_version=settings.RECOMMENDATION_MODEL_VERSION,
+                    image_url=p.image_url,
+                    price=p.price,
+                    category=p.category,
                 )
                 for p in candidates
             ]
@@ -115,6 +179,9 @@ class RecommendationService:
                         reason=f"Based on your recent interest in {category}",
                         source="heuristic",
                         model_version=settings.RECOMMENDATION_MODEL_VERSION,
+                        image_url=product.image_url,
+                        price=product.price,
+                        category=product.category,
                     )
                 )
 
@@ -140,3 +207,37 @@ class RecommendationService:
             for item in items
         ]
         await self.recommendations.save_many(rows)
+
+    async def _persist_batch(
+        self,
+        user_id: str,
+        items: list[RecommendationItem],
+        narrative: str,
+        interest_summary: str,
+        confidence: str,
+    ) -> None:
+        if not items:
+            return
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+        batch = RecommendationBatch(
+            user_id=user_id,
+            narrative=narrative,
+            interest_summary=interest_summary,
+            trigger_source="on_demand",
+            confidence=confidence,
+            model_version=settings.RECOMMENDATION_MODEL_VERSION,
+            expires_at=expires_at,
+        )
+        rows = [
+            Recommendation(
+                user_id=user_id,
+                product_id=item.product_id,
+                score=item.score,
+                reason=item.reason,
+                source=item.source,
+                model_version=item.model_version,
+                expires_at=expires_at,
+            )
+            for item in items
+        ]
+        await self.recommendations.save_batch(batch, rows)

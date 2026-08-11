@@ -1,23 +1,18 @@
 from fastapi import FastAPI
-
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from app.utils.logging import configure_logging, RequestLoggingMiddleware
-
 
 from app.api.v1.health import router as health_router
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.limiter import limiter
-
-
+from app.utils.logging import RequestLoggingMiddleware, configure_logging
 
 
 def create_app() -> FastAPI:
-
-    configure_logging(debug=settings.DEBUG)
+    configure_logging(settings.DEBUG)
 
     app = FastAPI(
         title=settings.APP_NAME,
@@ -54,4 +49,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
