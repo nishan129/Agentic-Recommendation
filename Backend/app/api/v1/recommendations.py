@@ -5,9 +5,11 @@ from app.core.dependencies import get_current_user
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.recommendation import RecommendationHistoryItem, RecommendationResponse
-from app.services.recommendation_service import RecommendationService
+
+from app.services.recommendation_service import RecommendationAgentError, RecommendationService
 
 router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
+
 
 
 @router.get("", response_model=RecommendationResponse)
@@ -17,9 +19,18 @@ async def get_recommendations(
     db: AsyncSession = Depends(get_db),
 ):
     service = RecommendationService(db)
-    items = await service.get_recommendations(current_user.id, limit=limit)
-    return RecommendationResponse(user_id=current_user.id, recommendations=items)
-
+    try:
+        result = await service.get_recommendations(current_user.id, limit=limit)
+    except RecommendationAgentError:
+        return RecommendationResponse(
+            user_id=current_user.id, recommendations=[], narrative=None, engine="agentic"
+        )
+    return RecommendationResponse(
+        user_id=current_user.id,
+        recommendations=result.items,
+        narrative=result.narrative,
+        engine=result.engine,
+    )
 
 @router.get("/history", response_model=list[RecommendationHistoryItem])
 async def get_recommendation_history(

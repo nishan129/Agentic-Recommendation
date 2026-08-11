@@ -14,8 +14,8 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 MODEL = "openai/gpt-4o-mini"
-MESHAPI_OPENAI_BASE_URL = "https://api.meshapi.ai"
-MESHAPI_API_KEY = 'rsk_01KZK6QCFTWYEADYHEQEABRAQ0'
+MESHAPI_OPENAI_BASE_URL = f"{settings.MESHAPI_BASE_URL}/v1"
+
 _client: ChatOpenAI | None = None
 
 
@@ -26,14 +26,14 @@ def get_llm_client(temperature: float = 0.3) -> ChatOpenAI:
     Note: temperature is bound per-call rather than cached globally, since
     complete_json and complete_text use different defaults (0.3 vs 0.7).
     """
-    if not MESHAPI_API_KEY:
+    if not settings.MESHAPI_API_KEY:
         raise RuntimeError(
             "MESHAPI_API_KEY is not set. Add it to your environment "
             "(see .env.example) before calling the LLM client."
         )
     return ChatOpenAI(
         base_url=MESHAPI_OPENAI_BASE_URL,
-        api_key=MESHAPI_API_KEY,
+        api_key=settings.MESHAPI_API_KEY,
         model=MODEL,
         temperature=temperature,
         timeout=settings.LLM_TIMEOUT_SECONDS,
@@ -53,7 +53,7 @@ def complete_json(
     if model:
         client = client.bind(model=model)
 
-    client = client.bind(model_kwargs={"response_format": {"type": "json_object"}})
+    client = client.bind(response_format={"type": "json_object"})
 
     response = client.invoke(
         [

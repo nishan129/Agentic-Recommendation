@@ -15,7 +15,7 @@ category literally contains the words "agentic AI").
 from dataclasses import dataclass
 
 from app.retrieval.embeddings import mesh_embed
-from app.retrieval.qdrant_services import search as qdrant_search
+from app.retrieval.qdrant_services import search 
 
 
 @dataclass
@@ -47,12 +47,12 @@ def search_similar_products(
         return []
 
     query_vector = mesh_embed([query_text])[0]
-    raw_results = qdrant_search(query_vector, top_k=top_k, exclude_ids=exclude_ids, active_only=True)
+    raw_results = search(query_vector, top_k=top_k, exclude_ids=exclude_ids, active_only=True)
 
     return [
         SimilarProduct(
             product_id=r["product_id"],
-            title=r["title"],
+            title=r["name"],
             category=r["category"],
             description=r["description"],
             price=r["price"],

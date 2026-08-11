@@ -46,6 +46,14 @@ class Settings(BaseSettings):
     RECOMMENDATION_MODEL_VERSION: str = "v1"
     RECOMMENDATION_DEFAULT_LIMIT: int = 10
 
+    RECOMMENDATION_ENGINE: str = "agentic"
+
+    LLM_TIMEOUT_SECONDS : int = 30
+
+    MESHAPI_API_KEY : str = 'rsk_01KZK6QCFTWYEADYHEQEABRAQ0'
+
+    MESHAPI_BASE_URL : str = 'https://api.meshapi.ai'
+
 
 @lru_cache
 def get_settings() -> Settings:
